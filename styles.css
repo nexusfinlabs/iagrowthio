@@ -594,35 +594,53 @@ video {
 /* Responsive Design */
 @media (max-width: 768px) {
 
-  .horizontal-card {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box;
-    padding: 1rem !important;
-    margin: 0 auto 2rem auto !important;
-    text-align: center !important;
-  }
+    /* 🔧 Fix tarjetas cortadas */
+    .horizontal-card {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 1rem !important;
+      box-sizing: border-box;
+      text-align: center !important;
+      margin: 0 auto 2rem auto !important;
+    }
 
-  .horizontal-item {
-    width: 100% !important;
-    min-width: 100% !important;
-    margin: 0 auto 2rem auto !important;
-    padding: 0 !important;
-  }
+    .horizontal-item {
+      width: 100% !important;
+      min-width: 100% !important;
+      margin: 0 auto 2rem auto !important;
+      padding: 0 !important;
+    }
 
-  .horizontal-video {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    object-fit: cover;
-    margin-top: 1rem !important;
-  }
+    .horizontal-video {
+      width: 100% !important;
+      height: auto !important;
+      object-fit: cover;
+      margin-top: 1rem !important;
+    }
 
-  .horizontal-section {
-    padding: 2rem 1rem !important;
-  }
+    /* 🧠 Mejora de lectura de bloques de texto iniciales */
+    .text-block-container {
+      height: auto !important;
+      min-height: 100vh;
+    }
+
+    .text-block {
+      font-size: 1.4rem !important;  /* más grande */
+      line-height: 1.9 !important;
+      padding: 1rem !important;
+      max-width: 100% !important;
+      position: static !important;
+      transform: none !important;
+      opacity: 1 !important;
+      text-align: center !important;
+    }
+
+    .text-block.active {
+      transform: none !important;
+      opacity: 1 !important;
+    }
 
   canvas.experience {
     max-width: 100vw;
