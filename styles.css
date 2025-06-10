@@ -620,28 +620,6 @@ video {
       margin-top: 1rem !important;
     }
 
-    /* 🧠 Mejora de lectura de bloques de texto iniciales */
-    .text-block-container {
-      height: auto !important;
-      min-height: 100vh;
-    }
-
-    .text-block {
-      font-size: 1.4rem !important;  /* más grande */
-      line-height: 1.9 !important;
-      padding: 1rem !important;
-      max-width: 100% !important;
-      position: static !important;
-      transform: none !important;
-      opacity: 1 !important;
-      text-align: center !important;
-    }
-
-    .text-block.active {
-      transform: none !important;
-      opacity: 1 !important;
-    }
-
   canvas.experience {
     max-width: 100vw;
     overflow-x: hidden;
@@ -669,6 +647,8 @@ video {
 
   .hero-right {
     align-items: center;
+    max-height: 100vh;
+    overflow: hidden;
   }
 
   .content-grid,
