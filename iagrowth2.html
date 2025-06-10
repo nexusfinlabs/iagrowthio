@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B2B IA Sales Automation Project</title>
+  <link href="https://use.typekit.net/skn8ash.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text-color: #ffffff;
+      --text-secondary: #a1a1aa;
+      --bg-color: #0a0a0a;
+      --bg-section: #111111;
+      --primary-accent: #ffffff;
+      --secondary-accent: #18181b;
+      --accent-gradient: linear-gradient(135deg, #ffffff 0%, #d4d4d8 100%);
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.3);
+      --border-radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Tenon', 'Inter', system-ui, sans-serif;
+      color: var(--text-color);
+      background: var(--bg-color);
+      overflow-x: hidden;
+      line-height: 1.7;
+      font-weight: 400;
+    }
+
+    /* Typography */
+    .hero-title {
+      font-family: 'Tenor Sans', serif;
+      font-size: clamp(4rem, 10vw, 7rem);
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 1.5rem;
+      color: var(--primary-accent);
+      letter-spacing: -0.03em;
+      text-align: center;
+    }
+
+    .hero-subtitle, .subtitle {
+      text-transform: none;
+    }
+
+    .hero-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 4rem;
+      min-height: 100vh;
+      padding: 6rem 10vw;
+    }
+
+    /* Título más pequeño */
+    .hero-left h1 {
+      font-family: 'Tenor Sans', serif;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 400;
+      color: white;
+      line-height: 1.1;
+      margin-bottom: 2rem;
+    }
+
+    /* Text Blocks con scroll */
+    .text-block-container {
+      height: 300px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .text-block {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      line-height: 1.6;
+      color: #00D4FF;
+      max-width: 500px;
+      position: absolute;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .text-block.hidden {
+      display: none;
+    }
+
+    .text-block.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .text-block:nth-child(1) {
+      color: #00D4FF;
+    }
+
+    .text-block:nth-child(2) {
+      color: #facc15;
+    }
+
+    .text-block:nth-child(3) {
+      color: #86efac;
+    }
+
+    .text-block:nth-child(4) {
+      color: #FF6B35;
+    }
+
+    .text-block:nth-child(5) {
+      color: #00FF88;
+    }
+
+    /* NUEVOS ESTILOS PARA LA SECCIÓN SCROLLABLE */
+    .scrollable-section {
+      height: 100vh;
+      position: relative;
+    }
+
+    .scrollable-content-grid {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 4rem;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      padding: 6rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .scrollable-text-container {
+      height: 400px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .scrollable-text-block {
+      font-family: 'Fraunces', serif;
+      font-size: 1.3rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      position: absolute;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .scrollable-text-block.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .scrollable-text-block:nth-child(1) {
+      color: #00D4FF;
+    }
+
+    .scrollable-text-block:nth-child(2) {
+      color: #facc15;
+    }
+
+    .scrollable-text-block:nth-child(3) {
+      color: #86efac;
+    }
+
+    .scrollable-text-block:nth-child(4) {
+      color: #FF6B35;
+    }
+
+    .section-title-fixed {
+      font-family: 'Tenor Sans', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      color: var(--primary-accent);
+      margin-bottom: 2rem;
+    }
+
+    /* Nuevo estilo para botones */
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 2rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 999px;
+      color: white;
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      text-decoration: none;
+      border: none;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+    }
+
+    .cta-button:hover::before {
+      opacity: 1;
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {transform: translateY(0) translateX(-50%);}
+      40% {transform: translateY(-10px) translateX(-50%);}
+      60% {transform: translateY(-5px) translateX(-50%);}
+    }
+
+    .hero-title {
+      font-family: 'Tenor Sans', serif;
+      font-size: clamp(4rem, 9vw, 6.5rem);
+      font-weight: 400;
+      line-height: 1;
+      color: white;
+      letter-spacing: -0.02em;
+      text-align: left;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-description {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 500px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 768px) {
+      .hero-split, .scrollable-content-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero-title {
+        text-align: center;
+      }
+
+      .hero-right {
+        align-items: center;
+      }
+    }
+
+    .section-title {
+      text-transform: none;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin-bottom: 3rem;
+      font-weight: 400;
+    }
+
+    .description {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin-bottom: 2rem;
+      line-height: 1.8;
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 4rem;
+      align-items: center;
+      width: 100%;
+    }
+
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+      color: white;
+      text-align: center;
+      justify-content: center;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      opacity: 0.9;
+      margin-bottom: 3rem;
+      font-weight: 300;
+    }
+
+    .hero-video {
+      width: 100%;
+      max-width: 800px;
+      height: 450px;
+      object-fit: cover;
+      border-radius: var(--border-radius);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      margin: 0 auto;
+    }
+
+    /* Regular Sections */
+    .bg-white {
+      background: var(--bg-section);
+    }
+
+    .bg-accent {
+      background: var(--bg-section);
+      color: var(--text-color);
+      border: 1px solid #333333;
+    }
+
+    .bg-accent .section-title {
+      color: var(--primary-accent);
+    }
+
+    .bg-accent .description {
+      color: var(--text-secondary);
+    }
+
+    /* Video Styling */
+    .video-container {
+      position: relative;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .video-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .section-video {
+      width: 100%;
+      height: 350px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Horizontal Video */
+    .horizontal-video {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16/9;
+      border-radius: 16px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .horizontal-video:hover {
+      transform: scale(1.02);
+    }
+
+    .video-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .video-modal video {
+      width: 90vw;
+      max-height: 90vh;
+      border-radius: 16px;
+    }
+
+    .video-modal .close-button {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      background: transparent;
+      border: none;
+      font-size: 2rem;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* Horizontal Scroll Sections */
+    .horizontal-section {
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg-section);
+    }
+
+    .horizontal-container {
+      display: flex;
+      height: 100%;
+      position: relative;
+    }
+
+    .horizontal-content {
+      display: flex;
+      height: 100%;
+      align-items: center;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .horizontal-item {
+      width: 100vw;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 2rem;
+    }
+
+    .horizontal-card {
+      display: grid;
+      grid-template-columns: minmax(300px, 1fr) 400px;
+      gap: 3rem;
+      align-items: center;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      background: var(--bg-section);
+      box-shadow: var(--shadow-light);
+      width: clamp(800px, 90vw, 1200px);
+      margin: 0 auto;
+    }
+
+    .horizontal-video {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+
+    /* Content Blocks */
+    .content-block {
+      background: var(--bg-section);
+      padding: 3rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-light);
+      margin-bottom: 2rem;
+      border: 1px solid #333333;
+    }
+
+    .feature-list {
+      list-style: none;
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.5rem;
+      background: var(--bg-section);
+      border: 1px solid #333333;
+      border-radius: 12px;
+      box-shadow: var(--shadow-light);
+      transition: transform 0.2s ease;
+    }
+
+    .feature-item:hover {
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      background: var(--accent-gradient);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .feature-text {
+      font-size: 1.1rem;
+      color: var(--text-color);
+    }
+
+    /* Call to Action */
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 2rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 999px;
+      color: #ffffff;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      text-decoration: none;
+      border: none;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+      transition: all 0.2s ease-in-out;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+      background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+    }
+
+    /* Footer */
+    .footer-section {
+      background: var(--bg-color);
+      color: white;
+      text-align: center;
+      min-height: 60vh;
+      border-top: 1px solid #333333;
+    }
+
+    .footer-content {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .content-grid,
+      .horizontal-card {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+      }
+
+      .container {
+        padding: 0 1rem;
+      }
+
+      .section {
+        padding: 4rem 0;
+      }
+
+      .horizontal-item {
+        padding: 0 1rem;
+      }
+    }
+
+    /* Animations */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeIn 0.8s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <section class="hero-split">
+    <div class="hero-left">
+      <h1> Automate your Sales Funnel</h1>
+    </div>
+    <div class="hero-right">
+      <div class="text-block-container">
+        <div class="text-block active">
+          Unlock your company full-funnel <br>Sales and Marketing Automation.<br><br>
+          Powered by AI, real-time data, and smart integration.
+          We integrate new artificial intelligence frameworks to thrive B2B and B2C
+          new leads outrech to close your Deals.
+        </div>
+        <div class="text-block">
+          ERP integration:   SAP + Workday. <br><br>
+          Enable seamless HR onboarding processes and workflows,
+          assigning a cost center and purchasing grants in SAP automatically
+          based on roles of employees and their business unit costs.
+        </div>
+        <div class="text-block">
+          Sales and Finance: SAP + NetSuite <br><br>
+          Let sales leads closed in SAP, be instantly triggered and synchronized with
+          NetSuite with automated workflows.<br><br>
+          With IA Growth automatizations your revenue forecasts and invoicing workflows are automatically generated
+           and aligned with the company's financial planning.
+        </div>
+        <div class="text-block">
+          Full-funnel automation for sales and marketing teams. <br><br>
+          Powered by large language models, real-time APIs and modular workflows.
+          Designed for revenue growth at scale.
+          Adaptable to any CRM, ERP, or Vertical Use-Cases.
+        </div>
+        <div class="text-block">
+           Your IA Growth Partner for B2C Products. <br><br>
+           Automate campaign logic, lead scoring, outreach,
+           and reporting with adaptive workflows
+           that learn and improve over time. <br>
+           These intelligent systems dynamically adjust messaging,
+           optimize touchpoints, and prioritize high-value opportunities using real-time feedback loops.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marketing Automation Section NUEVA CON SCROLL -->
+  <section class="scrollable-section bg-white" id="scrollableSection">
+    <div class="scrollable-content-grid">
+      <div class="content-area">
+        <h2 class="section-title-fixed">B2B Marketing & Sales Automation</h2>
+        <div class="scrollable-text-container">
+          <div class="scrollable-text-block active">
+            Transform your pipeline with intelligent workflows.<br><br>
+            We accelerate your revenue pipeline with AI-powered Automation Workflows.<br>
+            Let your entire sales and marketing journey get connected <br>
+            From lead generation to closed deals.
+          </div>
+          <div class="scrollable-text-block">
+            Advanced Lead Scoring & Qualification<br><br>
+            Our AI analyzes customer behavior patterns, engagement metrics, and demographic data
+            to automatically score and prioritize leads. Never miss a hot prospect again.
+          </div>
+          <div class="scrollable-text-block">
+            Multi-Channel Campaign Orchestration<br><br>
+            Seamlessly coordinate email, LinkedIn, SMS, and phone outreach campaigns.
+            Our system adapts messaging and timing based on prospect preferences and response patterns.
+          </div>
+          <div class="scrollable-text-block">
+            Real-Time Revenue Intelligence<br><br>
+            Get instant insights into pipeline health, conversion trends, and ROI metrics.
+            Make data-driven decisions with automated reporting and predictive analytics.
+          </div>
+        </div>
+      </div>
+      <div class="video-container">
+        <video class="section-video" src="vid/vid-1.mp4" autoplay muted loop playsinline></video>
+      </div>
+    </div>
+  </section>
+
+  <!-- Horizontal Scroll Section 1 -->
+  <section id="sectionPin" class="horizontal-section">
+    <div class="horizontal-container">
+      <div class="horizontal-content" id="pinWrap">
+
+        <div class="horizontal-item">
+          <div class="horizontal-card">
+            <div>
+              <h2 class="section-title"> Sales CRM: Clay, Hubspot, Expandio and Google Sheets</h2>
+              <p class="description">Discover how you can discover new leads and transforms then into sales processes, from lead generation to deals closed.</p>
+              <a href="mailto:sales@iagrowth.io" class="cta-button">Learn More</a>
+            </div>
+            <video class="horizontal-video video-preview" src="vid/vid-1.mp4" muted loop playsinline></video>
+          </div>
+        </div>
+
+        <div class="horizontal-item">
+          <div class="horizontal-card">
+            <div>
+              <h2 class="section-title">Linkedin Outreach: Lusha, Apollo API and Close CRM</h2>
+              <p class="description">Design smarter campaigns. <br><br>
+                Create data-driven campaigns that adapt and optimize based on customer,
+                company size and industry sectors.</p>
+                <a href="mailto:sales@iagrowth.io" class="cta-button">Professional Outreach</a>
+            </div>
+            <video class="horizontal-video video-preview" src="vid/vid2c.mp4" muted loop playsinline></video>
+          </div>
+        </div>
+
+        <div class="horizontal-item">
+          <div class="horizontal-card">
+            <div>
+              <h2 class="section-title">Accelerate your growth</h2>
+              <p class="description">Scale your operations effortlessly with automation that grows with your business and adapts to new challenges.</p>
+              <a href="mailto:sales@iagrowth.io" class="cta-button">ERP Integration</a>
+            </div>
+            <video class="horizontal-video video-preview" src="vid/vid3c.mp4" muted loop playsinline></video>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Features Section -->
+  <section class="section bg-accent">
+    <div class="container">
+      <div class="content-grid">
+        <div class="video-container">
+          <video class="section-video" src="vid/vid4c.mp4" autoplay muted loop playsinline></video>
+        </div>
+        <div class="content-area">
+          <h2 class="section-title">Key Features</h2>
+          <p class="subtitle">Our platform helps you achieve more with intelligent automation</p>
+          <div class="description">
+            <p>Built for modern sales teams who demand results. Every feature is designed to eliminate bottlenecks and amplify your team's performance.</p>
+
+            <div style="margin-top: 2rem;">
+              <ul class="feature-list">
+                <li class="feature-item">
+                  <div class="feature-icon"></div>
+                  <span class="feature-text">Advanced lead scoring algorithms</span>
+                </li>
+                <li class="feature-item">
+                  <div class="feature-icon"></div>
+                  <span class="feature-text">Multi-channel campaign orchestration</span>
+                </li>
+                <li class="feature-item">
+                  <div class="feature-icon"></div>
+                  <span class="feature-text">Real-time performance analytics</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Horizontal Scroll Section 2 (Reverse) -->
+  <section id="sectionPinIzq" class="horizontal-section">
+    <div class="horizontal-container">
+      <div class="horizontal-content" id="pinWrapIzq">
+        <div class="horizontal-item">
+          <div class="horizontal-card">
+            <video class="horizontal-video" src="vid/vid4c.mp4" autoplay muted loop playsinline></video>
+            <div>
+              <h2 class="section-title">Same funnel</h2>
+              <p class="description">Keep your existing funnel structure while supercharging it with AI-powered insights and automation.</p>
+              <a href="mailto:sales@iagrowth.io" class="cta-button">Optimize Now</a>
+            </div>
+          </div>
+        </div>
+        <div class="horizontal-item">
+          <div class="horizontal-card">
+            <video class="horizontal-video" src="vid/vid3c.mp4" autoplay muted loop playsinline></video>
+            <div>
+              <h2 class="section-title">Different approach</h2>
+              <p class="description">Revolutionary AI technology that learns and adapts to deliver personalized experiences at scale.</p>
+              <a href="mailto:sales@iagrowth.io" class="cta-button">Integrate AI</a>
+            </div>
+          </div>
+        </div>
+        <div class="horizontal-item">
+          <div class="horizontal-card">
+            <video class="horizontal-video" src="vid/vid2c.mp4" autoplay muted loop playsinline></video>
+            <div>
+              <h2 class="section-title">Better results</h2>
+              <p class="description">Measurable improvements in conversion rates, customer satisfaction, and revenue growth from day one.</p>
+              <a href="mailto:sales@iagrowth.io" class="cta-button">Ask Us</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <section class="section footer-section">
+    <div class="container">
+      <div class="footer-content">
+        <h2 class="section-title" style="color: white;">Made by Alberto & Ilya</h2>
+        <p class="subtitle" style="color: rgba(255,255,255,0.8);">Ready to transform your sales process?</p>
+
+        <div class="content-block" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+          <h3 style="color: white; margin-bottom: 1.5rem;">What you get:</h3>
+          <ul class="feature-list">
+            <li class="feature-item" style="background: rgba(255,255,255,0.1);">
+              <div class="feature-icon"></div>
+              <span class="feature-text" style="color: white;">Automate weekly reports</span>
+            </li>
+            <li class="feature-item" style="background: rgba(255,255,255,0.1);">
+              <div class="feature-icon"></div>
+              <span class="feature-text" style="color: white;">Connect to CRMs seamlessly</span>
+            </li>
+            <li class="feature-item" style="background: rgba(255,255,255,0.1);">
+              <div class="feature-icon"></div>
+              <span class="feature-text" style="color: white;">Real-time outreach optimization</span>
+            </li>
+          </ul>
+        </div>
+        <div style="margin-top: 3rem;">
+          <a href="#" class="cta-button" style="font-size: 1.2rem; padding: 1.2rem 3rem;">Get Started Today</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
+
+  <script>
+  // Video Modal - Funciones globales
+  function closeVideoModal() {
+    const modal = document.getElementById('videoModal');
+    const player = document.getElementById('videoPlayer');
+
+    if (modal && player) {
+      modal.style.display = 'none';
+      player.pause();
+      player.src = "";
+    }
+  }
+
+  function openVideoModal(src) {
+    const modal = document.getElementById('videoModal');
+    const player = document.getElementById('videoPlayer');
+
+    if (modal && player && src) {
+      modal.style.display = 'flex';
+      player.src = src;
+      player.play();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Scroll inicial
+    window.scrollTo(0, 0);
+
+    // Configuración inicial
+    const config = {
+      scrollDuration: 600,
+      touchThreshold: 30,
+      intersectionThreshold: 0.7,
+      transitionDelay: 300,
+      pointerEventsDelay: 1400
+    };
+
+    const colors = ['#00D4FF', '#facc15', '#86efac', '#FF6B35', '#00FF88'];
+
+    // Elementos del DOM
+    const elements = {
+      textBlocks: document.querySelectorAll('.text-block'),
+      nextSection: document.querySelector('.scrollable-section'),
+      scrollableTextBlocks: document.querySelectorAll('.scrollable-text-block'),
+      scrollableSection: document.getElementById('scrollableSection'),
+      heroSplit: document.querySelector('.hero-split'),
+      sectionPin: document.getElementById('sectionPin'),
+      sectionPinIzq: document.getElementById('sectionPinIzq'),
+      pinWrap: document.getElementById('pinWrap'),
+      pinWrapIzq: document.getElementById('pinWrapIzq'),
+      videoElements: document.querySelectorAll('.video-preview')
+    };
+
+    // Validación de elementos críticos
+    if (!elements.textBlocks.length) {
+      console.warn('No se encontraron elementos .text-block');
+      return;
+    }
+
+    // Estado de la aplicación
+    const state = {
+      currentBlock: 0,
+      currentScrollableBlock: 0,
+      isScrolling: false,
+      isScrollableScrolling: false,
+      transitioningToNextSection: false,
+      listenersAttached: false
+    };
+
+    // Configuración de videos
+    function initVideoModal() {
+      elements.videoElements.forEach(video => {
+        video.addEventListener('click', () => {
+          const src = video.getAttribute('src');
+          if (src) openVideoModal(src);
+        });
+      });
+    }
+
+    // Funciones de utilidad
+    function applyBlockStyles(block, isActive, colorIndex) {
+      if (!block) return;
+
+      block.classList.toggle('active', isActive);
+      block.style.opacity = isActive ? '1' : '0';
+      block.style.transform = isActive ? 'translateY(0)' : 'translateY(20px)';
+      block.style.color = colors[colorIndex] || '#ffffff';
+    }
+
+    function disableScrollTemporarily(duration = 1000) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.pointerEvents = 'none';
+
+      setTimeout(() => {
+        document.body.style.overflow = 'auto';
+        document.body.style.pointerEvents = 'auto';
+      }, duration);
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // Sección Hero - Navegación por bloques de texto
+    function showBlock(index) {
+      if (!elements.textBlocks.length) return;
+
+      elements.textBlocks.forEach((block, i) => {
+        applyBlockStyles(block, i === index, i);
+      });
+    }
+
+    function handleHeroScroll(direction) {
+      if (state.isScrolling) return;
+
+      state.isScrolling = true;
+
+      if (direction > 0) {
+        if (state.currentBlock < elements.textBlocks.length - 1) {
+          state.currentBlock++;
+          showBlock(state.currentBlock);
+        } else if (elements.nextSection) {
+          disableScrollTemporarily(1300);
+          gsap.to(window, {
+            scrollTo: {
+              y: elements.nextSection,
+              autoKill: false
+            },
+            duration: 1.2,
+            ease: "power2.inOut"
+          });
+          removeHeroListeners();
+        }
+      } else if (direction < 0 && state.currentBlock > 0) {
+        state.currentBlock--;
+        showBlock(state.currentBlock);
+      }
+
+      setTimeout(() => {
+        state.isScrolling = false;
+      }, config.scrollDuration);
+    }
+
+    // Event handlers para la sección hero
+    function heroWheelHandler(e) {
+      e.preventDefault();
+      const delta = Math.sign(e.deltaY);
+      handleHeroScroll(delta);
+    }
+
+    let heroTouchStartY = 0;
+    function heroTouchStartHandler(e) {
+      heroTouchStartY = e.touches[0].clientY;
+    }
+
+    function heroTouchEndHandler(e) {
+      const delta = heroTouchStartY - e.changedTouches[0].clientY;
+      if (Math.abs(delta) > config.touchThreshold) {
+        handleHeroScroll(Math.sign(delta));
+      }
+    }
+
+    function removeHeroListeners() {
+      window.removeEventListener('wheel', heroWheelHandler);
+      window.removeEventListener('touchstart', heroTouchStartHandler);
+      window.removeEventListener('touchend', heroTouchEndHandler);
+    }
+
+    function initHeroSection() {
+      if (!elements.textBlocks.length) return;
+
+      document.body.style.overflow = 'hidden';
+      showBlock(state.currentBlock);
+
+      window.addEventListener('wheel', heroWheelHandler, { passive: false });
+      window.addEventListener('touchstart', heroTouchStartHandler);
+      window.addEventListener('touchend', heroTouchEndHandler);
+    }
+
+    // Sección Scrollable - Navegación por bloques
+    function showScrollableBlock(index) {
+      if (!elements.scrollableTextBlocks.length) return;
+
+      elements.scrollableTextBlocks.forEach((block, i) => {
+        applyBlockStyles(block, i === index, i);
+      });
+    }
+
+    function handleScrollableScroll(direction) {
+        if (state.isScrollableScrolling || state.transitioningToNextSection) return;
+
+        state.isScrollableScrolling = true;
+
+        if (direction > 0) {
+          if (state.currentScrollableBlock < elements.scrollableTextBlocks.length - 1) {
+            state.currentScrollableBlock++;
+            showScrollableBlock(state.currentScrollableBlock);
+          } else {
+            transitionToNextSection();
+          }
+        } else if (direction < 0) {
+          if (state.currentScrollableBlock > 0) {
+            state.currentScrollableBlock--;
+            showScrollableBlock(state.currentScrollableBlock);
+          } else {
+            transitionToPreviousSection();
+          }
+        }
+
+        setTimeout(() => {
+          state.isScrollableScrolling = false;
+        }, config.scrollDuration);
+      }
+
+      function transitionToNextSection() {
+    if (!elements.sectionPin) return;
+
+    state.transitioningToNextSection = true;
+    disableScrollTemporarily(1300); // Evita scroll o clicks mientras transiciona
+
+    gsap.to(window, {
+      scrollTo: {
+        y: elements.sectionPin,
+        autoKill: false
+      },
+      duration: 1.2,
+      ease: "power2.inOut",
+      onComplete: () => {
+        state.transitioningToNextSection = false;
+      }
+    });
+  }
+
+    function transitionToPreviousSection() {
+      if (!elements.heroSplit) return;
+
+      disableScrollTemporarily(1300); // 👈 Evita scroll rápido o toques mientras transiciona
+
+      gsap.to(window, {
+        scrollTo: {
+          y: elements.heroSplit,
+          autoKill: false
+        },
+        duration: 1.2,
+        ease: "power2.inOut",
+        onComplete: () => {
+          state.transitioningToNextSection = false;
+        }
+      });
+    }
+
+    // Event handlers para la sección scrollable
+    function scrollableWheelHandler(e) {
+      e.preventDefault();
+      const delta = Math.sign(e.deltaY);
+      handleScrollableScroll(delta);
+    }
+
+    let scrollableTouchStartY = 0;
+    function scrollableTouchStartHandler(e) {
+      scrollableTouchStartY = e.touches[0].clientY;
+    }
+
+    function scrollableTouchEndHandler(e) {
+      const delta = scrollableTouchStartY - e.changedTouches[0].clientY;
+      if (Math.abs(delta) > config.touchThreshold) {
+        handleScrollableScroll(Math.sign(delta));
+      }
+    }
+
+    function attachScrollableListeners() {
+      if (state.listenersAttached) return;
+
+      window.addEventListener('wheel', scrollableWheelHandler, { passive: false });
+      window.addEventListener('touchstart', scrollableTouchStartHandler);
+      window.addEventListener('touchend', scrollableTouchEndHandler);
+      state.listenersAttached = true;
+    }
+
+    function removeScrollableListeners() {
+      window.removeEventListener('wheel', scrollableWheelHandler);
+      window.removeEventListener('touchstart', scrollableTouchStartHandler);
+      window.removeEventListener('touchend', scrollableTouchEndHandler);
+      state.listenersAttached = false;
+    }
+
+    // Intersection Observer para la sección scrollable
+    function initScrollableObserver() {
+      if (!elements.scrollableSection) return;
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            attachScrollableListeners();
+          } else {
+            removeScrollableListeners();
+          }
+        });
+      }, { threshold: config.intersectionThreshold });
+
+      observer.observe(elements.scrollableSection);
+
+      // Cleanup function
+      return () => observer.disconnect();
+    }
+
+    // GSAP ScrollTrigger para secciones horizontales
+    function initGSAPAnimations() {
+      if (!window.gsap || !window.ScrollTrigger) {
+        console.warn('GSAP o ScrollTrigger no están disponibles');
+        return;
+      }
+
+      try {
+        // Animación horizontal derecha
+        if (elements.pinWrap && elements.sectionPin) {
+          const pinWrapWidth = elements.pinWrap.scrollWidth;
+
+          gsap.to(elements.pinWrap, {
+            x: () => -(pinWrapWidth - window.innerWidth),
+            ease: "none",
+            scrollTrigger: {
+              trigger: elements.sectionPin,
+              pin: true,
+              scrub: 1,
+              start: "top top",
+              end: () => `+=${pinWrapWidth}`,
+              anticipatePin: 1,
+              invalidateOnRefresh: true
+            }
+          });
+        }
+
+        // Animación horizontal izquierda
+        if (elements.pinWrapIzq && elements.sectionPinIzq) {
+          const pinWrapIzqWidth = elements.pinWrapIzq.scrollWidth;
+
+          gsap.set(elements.pinWrapIzq, {
+            x: window.innerWidth - pinWrapIzqWidth
+          });
+
+          gsap.to(elements.pinWrapIzq, {
+            x: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: elements.sectionPinIzq,
+              pin: true,
+              scrub: 1,
+              start: "top top",
+              end: () => `+=${pinWrapIzqWidth}`,
+              anticipatePin: 1,
+              invalidateOnRefresh: true
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error inicializando GSAP:', error);
+      }
+    }
+
+    // Inicialización principal
+    function init() {
+      try {
+        // Inicializar componentes
+        initVideoModal();
+        initHeroSection();
+        showScrollableBlock(state.currentScrollableBlock);
+
+        // Inicializar observadores
+        const cleanupObserver = initScrollableObserver();
+
+        // Inicializar GSAP con delay
+        setTimeout(() => {
+          initGSAPAnimations();
+
+          // TRANSICIÓN ENTRE SCROLLABLE Y SECTIONPIN (suave)
+          gsap.to(window, {
+            scrollTrigger: {
+              trigger: elements.scrollableSection,
+              start: "bottom bottom",
+              end: "bottom+=1 top", // Activa justo al terminar el scrollable
+              once: true,
+              onEnter: () => {
+                gsap.to(window, {
+                  scrollTo: {
+                    y: elements.sectionPin,
+                    autoKill: false
+                  },
+                  duration: 1.2,
+                  ease: "power2.inOut"
+                });
+              }
+            }
+          });
+
+          if (window.ScrollTrigger) {
+            ScrollTrigger.refresh();
+          }
+
+        }, 500);
+
+        // Event listener para resize con debounce
+        const debouncedResize = debounce(() => {
+          if (window.ScrollTrigger) {
+            ScrollTrigger.refresh();
+          }
+        }, 250);
+
+        window.addEventListener('resize', debouncedResize);
+
+        // Cleanup al unload
+        window.addEventListener('beforeunload', () => {
+          removeHeroListeners();
+          removeScrollableListeners();
+          if (cleanupObserver) cleanupObserver();
+        });
+
+      } catch (error) {
+        console.error('Error en la inicialización:', error);
+      }
+    }
+
+    // Inicializar aplicación
+    init();
+  });
+  </script>
+  <div class="video-modal" id="videoModal" style="display: none">
+    <button class="close-button" onclick="closeVideoModal()">&times;</button>
+    <video id="videoPlayer" src="vid/vid-1.mp4" controls autoplay></video>
+  </div>
+
+</body>
+</html>

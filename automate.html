@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B2B IA Sales Automation Project</title>
+  <link href="https://use.typekit.net/skn8ash.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css" />
+  <style>
+    :root {
+      --text-color: #111;
+      --bg-color: #b9b3a9;
+      --primary-accent: #032f35;
+      --secondary-accent: #e3857a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      font-family: termina, sans-serif;
+      line-height: 1.6;
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    .container {
+      overflow: hidden;
+    }
+
+    section {
+      min-height: 100vh;
+      padding: 80px 10vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 5rem;
+      line-height: 1.1;
+      font-weight: 800;
+      color: var(--primary-accent);
+      position: absolute;
+      top: 10vw;
+      left: 10vw;
+      z-index: 2;
+    }
+
+    h1 span {
+      display: block;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      color: var(--primary-accent);
+      margin-bottom: 1.2rem;
+      max-width: 600px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      color: var(--text-color);
+      line-height: 1.7;
+    }
+
+    ul {
+      padding-left: 1.5rem;
+      font-size: 1.125rem;
+    }
+
+    li {
+      margin-bottom: 0.75rem;
+    }
+
+    video {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    #sectionPin, #sectionPinIzq {
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      background: var(--text-color);
+      color: var(--bg-color);
+    }
+
+    .pin-wrap, .pin-wrap-izq {
+      display: flex;
+      align-items: center;
+      gap: 4rem;
+      padding: 50px 10vw;
+      height: 100%;
+    }
+
+    .pin-wrap {
+      justify-content: flex-start;
+    }
+
+    .pin-wrap-izq {
+      justify-content: flex-end;
+    }
+
+    .pin-wrap > *, .pin-wrap-izq > * {
+      min-width: 60vw;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 12vw;
+        left: 5vw;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+
+      .pin-wrap > *, .pin-wrap-izq > * {
+        min-width: 90vw;
+      }
+
+      video {
+        max-height: 60vh;
+      }
+    }
+  </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const scroll = document.querySelector(".container");
+      const sections = document.querySelectorAll("section[data-bgcolor]");
+
+      const applySectionColors = (section) => {
+        document.body.style.backgroundColor = section.dataset.bgcolor || "#fff";
+        document.body.style.color = section.dataset.textcolor || "#111";
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) applySectionColors(entry.target);
+        });
+      }, { threshold: 0.6 });
+
+      sections.forEach(section => observer.observe(section));
+    });
+  </script>
+
+</head>
+<body>
+  <section data-bgcolor="#ffffff" data-textcolor="#032f35">
+    <div>
+      <h1 data-scroll data-scroll-speed="1"><span>Automation </span> <span>Lab Project</span></h1>
+      <p data-scroll data-scroll-speed="2" data-scroll-delay="0.2">by Alberto & Ilya</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <section id="sectionPin">
+      <div class="pin-wrap">
+        <h2>
+          Where Artificial Intelligence meets your Sales Funnel.<br><br>
+          Design smarter campaigns, automate interactions, and accelerate your growth.
+        </h2>
+        <video src="vid/vid1c.mp4" autoplay muted loop playsinline></video>
+        <video src="vid/vid2c.mp4" autoplay muted loop playsinline></video>
+        <video src="vid/vid3c.mp4" autoplay muted loop playsinline></video>
+
+      </div>
+    </section>
+  </div>
+
+  <section data-bgcolor="#ffffff" data-textcolor="#032f35">
+    <div>
+      <h2>Marketing Automation & <br> AI-Driven Sales Optimization</h2>
+      <p>Empower your marketing and sales pipeline with intelligent automation. Our Growth Lab platform helps you:</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <section id="sectionPinIzq">
+      <div class="pin-wrap-izq">
+        <h2>
+          Same same.... Sales Funnel.<br><br>
+          But differentent.....
+        </h2>
+        <video src="vid/vid4c.mp4" autoplay muted loop playsinline></video>
+        <video src="vid/vid3c.mp4" autoplay muted loop playsinline></video>
+        <video src="vid/vid2c.mp4" autoplay muted loop playsinline></video>
+      </div>
+    </section>
+  </div>
+
+  <section data-bgcolor="#e3857a" data-textcolor="#f1dba7">
+    <h2 data-scroll data-scroll-speed="1" class="credit">
+      <a href="https://www.linkedin.com/in/ajleblob/" target="_blank"> Made by Alberto</a>
+    </h2>
+    <ul>
+      <li>Automate weekly reports across Google, Meta, and TikTok Ads</li>
+      <li>Connect to CRMs like HubSpot, Zoho or Close</li>
+      <li>Trigger real-time outreach via multi-channel agents</li>
+      <li>Enrich leads automatically and qualify them with AI</li>
+      <li>Gain visibility into campaign ROI through predictive analytics</li>
+    </ul>
+  </section>
+
+  <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const pageContainer = document.querySelector(".container");
+
+    const scroller = new LocomotiveScroll({
+      el: pageContainer,
+      smooth: true
+    });
+
+    scroller.on("scroll", ScrollTrigger.update);
+
+    ScrollTrigger.scrollerProxy(pageContainer, {
+      scrollTop(value) {
+        return arguments.length ? scroller.scrollTo(value, 0, 0) : scroller.scroll.instance.scroll.y;
+      },
+      getBoundingClientRect() {
+        return {
+          left: 0,
+          top: 0,
+          width: window.innerWidth,
+          height: window.innerHeight
+        };
+      },
+      pinType: pageContainer.style.transform ? "transform" : "fixed"
+    });
+
+    window.addEventListener("load", function () {
+      let pinWrap = document.querySelector(".pin-wrap");
+      let pinWrapWidth = pinWrap.scrollWidth;
+      let horizontalScrollLength = pinWrapWidth - window.innerWidth;
+
+      gsap.to(".pin-wrap", {
+        scrollTrigger: {
+          scroller: pageContainer,
+          scrub: true,
+          trigger: "#sectionPin",
+          pin: true,
+          start: "top top",
+          end: pinWrapWidth
+        },
+        x: -horizontalScrollLength,
+        ease: "none"
+      });
+
+      let pinWrapIzq = document.querySelector(".pin-wrap-izq");
+      let pinWrapIzqWidth = pinWrapIzq.scrollWidth;
+      let horizontalScrollLengthIzq = pinWrapIzqWidth - window.innerWidth;
+
+      gsap.to(".pin-wrap-izq", {
+        scrollTrigger: {
+          scroller: pageContainer,
+          scrub: true,
+          trigger: "#sectionPinIzq",
+          pin: true,
+          start: "top top",
+          end: () => `+=${pinWrapIzqWidth}`  // Usar posición relativa
+        },
+        x: -horizontalScrollLengthIzq,
+        ease: "none"
+      });
+
+      ScrollTrigger.addEventListener("refresh", () => scroller.update());
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 100);
+      });
+    });
+  </script>
+</body>
+</html>

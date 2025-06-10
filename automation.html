@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Growth Automatization</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/TextureLoader.js"></script>
+    <style>
+
+        body {
+            margin: 0;
+        }
+
+        .experience {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1; /* Menor que los botones (1000) */
+        }
+
+        .scrollTarget {
+            position: absolute;
+            height: 2000vh; /* Túnel más largo */
+            width: 100px;
+            top: 0;
+            z-index: 0;
+        }
+
+        .vignette-radial {
+            position: fixed;
+            z-index: 11;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .vignette-radial:after {
+            pointer-events: none;
+            content: ' ';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: radial-gradient(circle, transparent 60%, black 150%);
+        }
+
+        /* Estilos para los botones al final */
+        .buttons-container {
+            position: fixed;
+            bottom: 50%;
+            left: 50%;
+            transform: translate(-50%, 50%); /* Centrado perfecto */
+            opacity: 0;
+            z-index: 1000;
+            display: flex;
+            gap: 2rem;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            flex-direction: row; /* Asegura disposición horizontal */
+            justify-content: center; /* Centrado horizontal interno */
+        }
+
+        .buttons-container.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .terminal-button {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background-color: #000;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            font-size: 1.1rem;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+            width: fit-content;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+            animation-delay: 0.5s;
+        }
+
+        .terminal-button::after {
+            content: '|';
+            position: absolute;
+            right: 10px;
+            animation: blink 1s step-start infinite;
+            color: #00ff00;
+        }
+
+        @keyframes typewriter {
+            from {
+                width: 0;
+            }
+            to {
+                width: 220px; /* 👈 mismo que max-width arriba */
+            }
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .buttons-container {
+                flex-direction: column;
+                gap: 1.5rem;
+                transform: translate(-50%, 50%);
+            }
+
+            .terminal-button {
+                width: 250px;
+                text-align: center;
+            }
+        }
+        html, body {
+          height: 100%;
+          overflow-x: hidden;
+          overflow-y: auto;
+      }
+    </style>
+</head>
+<body>
+    <canvas class="experience"></canvas>
+    <div class="scrollTarget"></div>
+    <div class="vignette-radial"></div>
+
+    <!-- Bip de los Botones al final del recorrido -->
+    <audio id="bip1" src="/audio/bip1.mp3" preload="auto"></audio>
+    <audio id="bip2" src="/audio/bip2.mp3" preload="auto"></audio>
+
+    <!-- Botones al final del recorrido -->
+    <div class="buttons-container">
+        <a href="iagrowth.html" class="terminal-button" onclick="handleClick('growth')">
+            Home
+        </a>
+        <a href="ia-automatization.html" class="terminal-button" onclick="handleClick('playground')">
+            Play More
+        </a>
+    </div>
+
+    <!-- Three.js -->
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/build/three.min.js"></script>
+
+    <!-- GLTFLoader.js -->
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- DRACOLoader -->
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/DRACOLoader.js"></script>
+
+    <!-- GSAP y ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Texture Loader -->
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/TextureLoader.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- THREE.LineBasicMaterial.js -->
+    <script>
+
+        // Material para las líneas
+        var lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xffffff,
+            opacity: 0.2,
+            transparent: true
+        });
+
+        // Math Utils
+        var Mathutils = {
+            normalize: function($value, $min, $max) {
+                return ($value - $min) / ($max - $min);
+            },
+            interpolate: function($normValue, $min, $max) {
+                return $min + ($max - $min) * $normValue;
+            },
+            map: function($value, $min1, $max1, $min2, $max2) {
+                if ($value < $min1) {
+                    $value = $min1;
+                }
+                if ($value > $max1) {
+                    $value = $max1;
+                }
+                var res = this.interpolate(this.normalize($value, $min1, $max1), $min2, $max2);
+                return res;
+            }
+        };
+
+        var markers = [];
+
+        //Get window size
+        var ww = window.innerWidth,
+          wh = window.innerHeight;
+
+        var composer, params = {
+            exposure: 1.3,
+            bloomStrength: .9,
+            bloomThreshold: 0,
+            bloomRadius: 0
+        };
+
+        //Create a WebGL renderer
+        var renderer = new THREE.WebGLRenderer({
+          canvas: document.querySelector("canvas"),
+          antialias: true,
+          shadowMapEnabled: true,
+          shadowMapType: THREE.PCFSoftShadowMap
+        });
+        renderer.setSize(ww, wh);
+
+        //Create an empty scene
+        var scene = new THREE.Scene();
+        scene.fog = new THREE.Fog(0x194794,0,100);
+
+        // Grupo de líneas que conectan iconos
+        var lineGroup = new THREE.Group();
+        scene.add(lineGroup);
+
+        var clock = new THREE.Clock();
+
+        //Create a perpsective camera
+        var cameraRotationProxyX = 3.14159;
+        var cameraRotationProxyY = 0;
+
+        var camera = new THREE.PerspectiveCamera(45, ww / wh, 0.001, 200);
+        camera.rotation.y = cameraRotationProxyX;
+        camera.rotation.z = cameraRotationProxyY;
+
+        var c = new THREE.Group();
+        c.position.z = 400;
+
+        c.add(camera);
+        scene.add(c);
+
+        // Verificar si EffectComposer está disponible
+        if (typeof THREE.EffectComposer !== 'undefined') {
+            //set up render pass
+            var renderScene = new THREE.RenderPass( scene, camera );
+            var bloomPass = new THREE.UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+            bloomPass.renderToScreen = true;
+            bloomPass.threshold = params.bloomThreshold;
+            bloomPass.strength = params.bloomStrength;
+            bloomPass.radius = params.bloomRadius;
+            composer = new THREE.EffectComposer( renderer );
+            composer.setSize( window.innerWidth, window.innerHeight );
+            composer.addPass( renderScene );
+            composer.addPass( bloomPass );
+        }
+
+        // Crear puntos con movimiento ondulado en X e Y
+        const points = [];
+        const totalPoints = 200;
+
+        //Create a path from the points
+        var path = new THREE.CatmullRomCurve3(points);
+        path.tension = .5;
+
+        for (let i = 0; i < totalPoints; i++) {
+          const t = i / totalPoints;
+          const x = Math.sin(t * Math.PI * 4) * 20;  // serpenteo horizontal
+          const y = Math.sin(t * Math.PI * 8) * 10;  // ondulación vertical
+          const z = t * 600;                         // profundidad
+          points.push(new THREE.Vector3(x, y, z));
+        }
+
+        // Luz puntual más fuerte
+        var light = new THREE.PointLight(0xffffff, 1.5, 100);
+        light.position.set(50, 0, 20);
+        light.castShadow = true;
+        scene.add(light);
+
+        function createTextLabel(text, position, options = {}) {
+          const {
+            color = '#ffffff',
+            offset = { x: 0, y: 0, z: 0 },
+            scale = { x: 15, y: 3.75 },
+            font = 'bold 48px Arial'
+          } = options;
+
+          // 1. Crear canvas y contexto
+          const canvas = document.createElement('canvas');
+          canvas.width = 1024;
+          canvas.height = 256;
+          const ctx = canvas.getContext('2d');
+
+          // 2. Estilos
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = color;
+          ctx.font = font;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+
+          // 3. Escribir texto sin contorno ni sombra
+          ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+          // 4. Convertir en textura
+          const texture = new THREE.CanvasTexture(canvas);
+          const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+          const sprite = new THREE.Sprite(material);
+          sprite.scale.set(scale.x, scale.y, 1);
+
+          // 5. Posición en el túnel
+          const point = path.getPointAt(position);
+          sprite.position.set(
+            point.x + offset.x,
+            point.y + offset.y,
+            point.z + offset.z
+          );
+
+          // 6. Apuntar hacia cámara (manteniendo verticalidad)
+          //sprite.lookAt(camera.position.x, sprite.position.y, camera.position.z);
+          // 6. Apuntar hacia la cámara correctamente
+          sprite.lookAt(camera.getWorldPosition(new THREE.Vector3()));
+
+          scene.add(sprite);
+        }
+
+        //Create a new geometry with a different radius
+        var geometry = new THREE.TubeGeometry( path, 600, 4, 32, false ); // Más segmentos
+
+        // Define material
+        const material = new THREE.MeshStandardMaterial({
+          color: 0x000000,
+          side: THREE.BackSide,
+          metalness: 0.1,
+          roughness: 0.85
+        });
+
+        //Create a mesh
+        var tube = new THREE.Mesh( geometry, material );
+        scene.add(tube);
+
+        // Creamos Texto
+        createTextLabel('CRM Automation', 0.05);
+        createTextLabel('Sales Automation', 0.2);
+        createTextLabel('AI Frameworks', 0.3);
+        createTextLabel('ERP Migration', 0.4);
+        createTextLabel('Dev Ops', 0.46);
+        createTextLabel('Team Productivity', 0.54);
+        createTextLabel('DataBase Automation', 0.7);
+        createTextLabel('Ads Automation', 0.8);
+        createTextLabel('Social Media', 0.9);
+
+        // Inner tube
+        var geometry2 = new THREE.TubeGeometry( path, 300, 3.4, 32, false );
+        var geo = new THREE.EdgesGeometry( geometry2 );
+        var mat = new THREE.LineBasicMaterial( {
+          linewidth: 2,
+          opacity: .2,
+          transparent: 1
+        } );
+
+        var wireframe = new THREE.LineSegments( geo, mat );
+        scene.add(wireframe);
+
+        // Crear iconos flotantes con logos reales
+        var iconGroup = new THREE.Group();
+        scene.add(iconGroup);
+
+        // Definir posiciones para los iconos a lo largo del túnel
+        var iconPositions = [
+            // createTextLabel('CRM Automation', 0.07);
+            { pos: 0.1, offset: { x: 2, y: -1, z: 0 }, name: 'clay', color: 0x18BFFF, logo: '/glb/clay.glb' },
+            { pos: 0.13, offset: { x: -2, y: -2, z: 0 }, name: 'hubspot', color: 0x0052CC, logo: '/glb/hubspot.glb' },
+            { pos: 0.16, offset: { x: 1, y: -2, z: 0 }, name: 'close_color', color: 0x0052CC, logo: '/glb/close_color.glb' },
+
+            // createTextLabel('Sales Automation', 0.2);
+            { pos: 0.23, offset: { x: 1, y: 2, z: 0 }, name: 'salesforce', color: 0x0052CC, logo: '/glb/salesforce.glb' },
+            { pos: 0.26, offset: { x: -1, y: -1, z: 0 }, name: 'zoho', color: 0x18BFFF, logo: '/glb/zoho.glb' },
+            { pos: 0.28, offset: { x: -1, y: -2, z: 0 }, name: 'pipedrive2', color: 0x18BFFF, logo: '/img/pipedrive2.png' },
+
+            // createTextLabel('AI Frameworks', 0.3);
+            { pos: 0.32, offset: { x: 2, y: -2, z: 0 }, name: 'n8n', color: 0x0052CC, logo: '/glb/n8n.glb' },
+            { pos: 0.34, offset: { x: -1, y: -2, z: 0 }, name: 'zapier', color: 0x0052CC, logo: '/glb/zapier.glb' },
+            { pos: 0.36, offset: { x: -1, y: 2, z: 0 }, name: 'make', color: 0x0052CC, logo: '/glb/make.glb' },
+            { pos: 0.38, offset: { x: 1, y: 1, z: 0 }, name: 'openai2', color: 0x0052CC, logo: '/glb/openai2.glb' },
+
+            // createTextLabel('ERP Migration', 0.4);
+            { pos: 0.41, offset: { x: -1, y: 0, z: 0 }, name: 'workday_', logo: '/img/workday_.png' },
+            { pos: 0.42, offset: { x: 1, y: 1, z: 0 }, name: 's4hana_', logo: '/img/s4hana_.png' },
+            { pos: 0.43, offset: { x: -1, y: -2, z: 0 }, name: 'dynamics', color: 0x0052CC, logo: '/glb/dynamics.glb' },
+            { pos: 0.44, offset: { x: -1, y: 0, z: 0 }, name: 'netsuite_', logo: '/img/netsuite_.png' },
+            { pos: 0.45, offset: { x: 1, y: -2, z: 0 }, name: 'sap_', logo: '/img/sap_.png' },
+
+            // createTextLabel('Dev Ops', 0.46);
+            { pos: 0.48, offset: { x: -1, y: -1, z: 0 }, name: 'docker', color: 0x0052CC, logo: '/glb/docker.glb' },
+            { pos: 0.5, offset: { x: 1, y: -2, z: 0 }, name: 'jenkins', color: 0x0052CC, logo: '/glb/jenkins.glb' },
+            { pos: 0.52, offset: { x: -2, y: 0, z: 0 }, name: 'gitlab2', color: 0x0052CC, logo: '/glb/gitlab2.glb' },
+
+            // createTextLabel('Teams Productivity', 0.54);
+            { pos: 0.56, offset: { x: 2, y: -1, z: 0 }, name: 'slack2', color: 0x0052CC, logo: '/glb/slack2.glb' },
+            { pos: 0.58, offset: { x: 2, y: -2, z: 0 }, name: 'teams', color: 0xFF4A00, logo: '/glb/teams.glb' },
+            { pos: 0.6, offset: { x: -2, y: 1, z: 0 }, name: 'notion', color: 0x0052CC, logo: '/glb/notion.glb' },
+            { pos: 0.62, offset: { x: 2, y: -1, z: 0 }, name: 'airtable3', color: 0x0052CC, logo: '/glb/airtable3.glb' },
+            { pos: 0.65, offset: { x: 2, y: -2, z: 0 }, name: 'figma', color: 0x18BFFF, logo: '/glb/figma.glb' },
+            { pos: 0.67, offset: { x: 1, y: -2, z: 0 }, name: 'outlook', color: 0x0052CC, logo: '/glb/outlook.glb' },
+
+            // createTextLabel('DataBase Automation', 0.7);
+            { pos: 0.72, offset: { x: -1, y: -2, z: 0 }, name: 'aws_ec2', color: 0x0052CC, logo: '/glb/aws_ec2.glb' },
+            { pos: 0.74, offset: { x: -2, y: 1, z: 0 }, name: 'firebase', color: 0x0052CC, logo: '/glb/firebase.glb' },
+            { pos: 0.76, offset: { x: 2, y: 1, z: 0 }, name: 'supabase', color: 0x0052CC, logo: '/glb/supabase.glb' },
+            { pos: 0.78, offset: { x: -2, y: 1, z: 0 }, name: 'mongo', color: 0x0052CC, logo: '/glb/mongo.glb' },
+
+            // createTextLabel('Ads Automation ', 0.8);
+            { pos: 0.82, offset: { x: 2, y: 1, z: 0 }, name: 'google_ads', color: 0x0052CC, logo: '/glb/google_ads.glb' },
+            { pos: 0.84, offset: { x: 1, y: 1, z: 0 }, name: 'meta2', color: 0x0052CC, logo: '/glb/meta2.glb' },
+            { pos: 0.86, offset: { x: -1, y: -2, z: 0 }, name: 'amazon', color: 0x0052CC, logo: '/glb/amazon.glb' },
+            { pos: 0.88, offset: { x: 1, y: -2, z: 0 }, name: 'shopify', color: 0x0052CC, logo: '/glb/shopify.glb' },
+
+            // createTextLabel('Social Media', 0.9);
+            { pos: 0.92, offset: { x: -1, y: 2, z: 0 }, name: 'whatsapp', color: 0x25D366, logo: '/glb/whatsapp.glb' },
+            { pos: 0.94, offset: { x: -1, y: -2, z: 0 }, name: 'dynamics2', color: 0x0052CC, logo: '/glb/dynamics2.glb' },
+            { pos: 0.96, offset: { x: 1, y: -2, z: 0 }, name: 'vscode', color: 0x0052CC, logo: '/glb/vscode.glb' },
+            { pos: 0.98, offset: { x: 1, y: -2, z: 0 }, name: 'tiktok', color: 0x0052CC, logo: '/glb/tiktok.glb' }
+        ];
+        // Carga los iconos a unir
+        let loadedIcons = 0;
+        const totalToLoad = iconPositions.length;
+
+        var icons = [];
+
+        function connectIcons(iconA, iconB) {
+            if (!iconA?.mesh || !iconB?.mesh) return;
+
+            const start = iconA.mesh.position.clone();
+            const end = iconB.mesh.position.clone();
+            const mid = start.clone().lerp(end, 0.5).add(new THREE.Vector3(0, 2, 0)); // curva hacia arriba
+
+            const curve = new THREE.CatmullRomCurve3([start, mid, end]);
+
+            const geometry = new THREE.TubeGeometry(curve, 20, 0.06, 8, false);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0x00ffff,
+                transparent: true,
+                opacity: 0.5
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            lineGroup.add(mesh);
+        }
+
+        iconPositions.forEach(function(iconData, index) {
+
+            if (iconData.logo.endsWith('.glb')) {
+              console.log('🔄 ************** Cargando GLB *********************'); // <--- Añade esta línea
+              console.log('🔄 Cargando icono:', iconData.name); // <--- Añade esta línea
+                const loader = new THREE.GLTFLoader();
+                const dracoLoader = new THREE.DRACOLoader();
+                dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/'); // o pon tu ruta local
+                loader.setDRACOLoader(dracoLoader);
+                loader.load(iconData.logo, function(gltf) {
+
+                    // Carga los iconos GLBx
+                    const model = gltf.scene;
+
+                    // Defininimos
+                    const box = new THREE.Box3().setFromObject(model);
+                    const center = new THREE.Vector3();
+                    box.getCenter(center);
+
+                    // 🔧 Escala automática
+                    const size = new THREE.Vector3();
+                    box.getSize(size);
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const scaleFactor = 2.5 / maxDim;
+                    model.scale.setScalar(scaleFactor);
+
+                    // ✅ ROTACIÓN FIJA DEFINITIVA
+                    if (iconData.name === 'slack2') {
+                      model.rotation.set(0, Math.PI * 1.5, 0);
+                    } else if (iconData.name === 'gitlab2') {
+                      model.rotation.set(0, Math.PI * 1.5, 0);
+                    } else if (iconData.name === 'airtable3') {
+                      model.rotation.set(0, Math.PI * 0.3, 0);
+                    } else if (iconData.name === 'aws_ec2') {
+                      model.rotation.set(0, Math.PI * 0.15, 0);
+                    } else if (iconData.name === 'meta2') {
+                      model.rotation.set(0, Math.PI * 1.4, 0);
+                    } else if (iconData.name === 'whatsapp') {
+                      model.rotation.set(Math.PI / 2, 1.5, 0);
+                      // 💡 AÑADIR LUZ LOCAL
+                      const pointLight = new THREE.PointLight(0x00ff00, 2, 10);
+                      pointLight.position.set(0, 0, 2); // ajusta según orientación
+                      model.add(pointLight);
+                    } else if (iconData.name === 'tiktok') {
+                      model.rotation.set(Math.PI / 2, 1.2, 0);
+                    } else {
+                      model.rotation.set(0, 0, 0);
+                    }
+
+                    // Añadir al contenedor
+                    const container = new THREE.Group();
+                    container.add(model);
+                    iconGroup.add(container);
+
+                    // Guardar con info de posición
+                    icons[index] = {
+                        mesh: container,
+                        offset: iconData.offset,
+                        position: iconData.pos
+                    };
+
+                    // Carga y conecta
+                    loadedIcons++;
+
+                    if (loadedIcons === totalToLoad) {
+                      console.log('✅ Todos los iconos cargados:', icons);
+                    }
+                }, undefined, function(err) {
+                    console.warn('❌ Error cargando GLB:', iconData.name, err);
+                });
+            }
+            else if (iconData.logo.endsWith('.png')) {
+              console.log('🔄 Cargando PNG:', iconData.name);
+              const textureLoader = new THREE.TextureLoader();
+              textureLoader.load(iconData.logo, function(texture) {
+                  const spriteMaterial = new THREE.SpriteMaterial({
+                      map: texture,
+                      //color: iconData.color,
+                      transparent: true
+                  });
+                  const sprite = new THREE.Sprite(spriteMaterial);
+                  sprite.scale.set(2, 2, 1); // Ajusta según necesidad
+
+                  const container = new THREE.Group();
+                  container.add(sprite);
+                  iconGroup.add(container);
+
+                  icons[index] = {
+                      mesh: container,
+                      offset: iconData.offset,
+                      position: iconData.pos
+                  };
+
+                  loadedIcons++;
+                  if (loadedIcons === totalToLoad) {
+                      console.log('✅ Todos los iconos cargados:', icons);
+                  }
+              }, undefined, function(err) {
+                  console.warn('❌ Error cargando PNG:', iconData.name, err);
+              });
+          }
+        });
+
+        function updateCameraPercentage(percentage) {
+          p1 = path.getPointAt(percentage);
+          p2 = path.getPointAt(percentage + 0.01); // Reducido para suavizar
+
+          c.position.set(p1.x,p1.y,p1.z);
+          c.lookAt(p2);
+          light.position.set(p2.x, p2.y, p2.z);
+
+          // Actualizar posiciones de iconos
+          icons.forEach(function(icon) {
+            if (!icon.mesh) return;
+
+            const isVisible = Math.abs(percentage - icon.position) < 0.15;
+
+            icon.mesh.visible = isVisible;
+
+            if (isVisible) {
+              const iconPos = path.getPointAt(icon.position);
+              icon.mesh.position.set(
+                iconPos.x + icon.offset.x,
+                iconPos.y + icon.offset.y,
+                iconPos.z + icon.offset.z
+              );
+
+              // ✨ Forzar que mire a cámara SOLO en eje Z (no se tumbe ni rote raro)
+              const cameraDirection = new THREE.Vector3();
+              camera.getWorldDirection(cameraDirection);
+              icon.mesh.lookAt(
+                camera.position.x,
+                icon.mesh.position.y, // mantiene la verticalidad
+                camera.position.z
+              );
+
+              // ⬆️ animación flotante ligera
+              const time = Date.now() * 0.001;
+              icon.mesh.position.y += Math.sin(time + icon.position * 10) * 0.1;
+            }
+          });
+
+          // Limpiar líneas anteriores
+          lineGroup.clear();
+
+        }
+
+        var cameraTargetPercentage = 0;
+        var currentCameraPercentage = 0;
+
+        gsap.defaultEase = Linear.easeNone;
+
+        var tubePerc = {
+          percent: 0
+        }
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        // En el código GSAP, asegúrate que los botones aparezcan al final
+        var tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: ".scrollTarget",
+            start: "top top",
+            end: "bottom 100%",
+            scrub: 5,
+            onUpdate: function(self) {
+                var buttons = document.querySelector('.buttons-container');
+                if (self.progress >= 0.98) {
+                    buttons.style.opacity = '1';
+                    buttons.style.pointerEvents = 'auto';
+                } else {
+                    buttons.style.opacity = '0';
+                    buttons.style.pointerEvents = 'none';
+                }
+            }
+          }
+        });
+
+        // reiniciamos al refrescar
+        window.scrollTo(0, 0);
+
+        tl.to(tubePerc, {
+           percent:.98,
+           ease: Linear.easeNone,
+           duration: 20, // Duración más larga
+           onUpdate: function() {
+             cameraTargetPercentage = tubePerc.percent;
+           }
+        });
+
+        // Particle system
+        var spikeyTexture = new THREE.TextureLoader().load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/spikey.png');
+
+        var particleCount = 8000, // Más partículas
+            particles1 = new THREE.BufferGeometry(),
+            particles2 = new THREE.BufferGeometry(),
+            particles3 = new THREE.BufferGeometry();
+
+        // Crear arrays de posiciones para las partículas
+        var positions1 = new Float32Array(particleCount * 3);
+        var positions2 = new Float32Array(particleCount * 3);
+        var positions3 = new Float32Array(particleCount * 3);
+
+        for (var p = 0; p < particleCount; p++) {
+            var i = p * 3;
+
+            // Partículas 1
+            positions1[i] = Math.random() * 800 - 400;
+            positions1[i + 1] = Math.random() * 100 - 50;
+            positions1[i + 2] = Math.random() * 800 - 400;
+
+            // Partículas 2
+            positions2[i] = Math.random() * 800;
+            positions2[i + 1] = Math.random() * 20 - 10;
+            positions2[i + 2] = Math.random() * 800;
+
+            // Partículas 3
+            positions3[i] = Math.random() * 800;
+            positions3[i + 1] = Math.random() * 20 - 10;
+            positions3[i + 2] = Math.random() * 800;
+        }
+
+        particles1.setAttribute('position', new THREE.BufferAttribute(positions1, 3));
+        particles2.setAttribute('position', new THREE.BufferAttribute(positions2, 3));
+        particles3.setAttribute('position', new THREE.BufferAttribute(positions3, 3));
+
+        var pMaterial = new THREE.PointsMaterial({
+          color: 0xFFFFFF,
+          size: .5,
+          map: spikeyTexture,
+          transparent: true,
+          blending: THREE.AdditiveBlending
+        });
+
+        // create the particle systems
+        var particleSystem1 = new THREE.Points(particles1, pMaterial);
+        var particleSystem2 = new THREE.Points(particles2, pMaterial);
+        var particleSystem3 = new THREE.Points(particles3, pMaterial);
+
+        // add them to the scene
+        scene.add(particleSystem1);
+        scene.add(particleSystem2);
+        scene.add(particleSystem3);
+
+        function render(){
+          currentCameraPercentage = cameraTargetPercentage
+
+          camera.rotation.y += (cameraRotationProxyX - camera.rotation.y) / 15;
+          camera.rotation.x += (cameraRotationProxyY - camera.rotation.x) / 15;
+
+          updateCameraPercentage(currentCameraPercentage);
+          //positionButtonsAtTunnelEnd();
+
+          // Animate particles
+          particleSystem1.rotation.y += 0.00002;
+          particleSystem2.rotation.x += 0.00005;
+          particleSystem3.rotation.z += 0.00001;
+
+          // Render the scene
+          if (composer) {
+              composer.render();
+          } else {
+              renderer.render(scene, camera);
+          }
+
+          requestAnimationFrame(render);
+        }
+
+        // Al final del juego nos lo pasamos
+      //   function positionButtonsAtTunnelEnd() {
+      //     const buttonsContainer = document.querySelector('.buttons-container');
+      //     const endPoint = path.getPointAt(1); // o 1 si no hay errores de fuera de rango
+      //
+      //     // Clonamos y proyectamos a pantalla
+      //     const screenPos = endPoint.clone().project(camera);
+      //
+      //     // Convertimos a coordenadas de pantalla
+      //     const x = (screenPos.x * 0.5 + 0.5) * window.innerWidth;
+      //     const y = (-screenPos.y * 0.5 + 0.5) * window.innerHeight;
+      //
+      //     // Posicionamos
+      //     buttonsContainer.style.position = 'absolute';
+      //     buttonsContainer.style.left = `${x}px`;
+      //     buttonsContainer.style.top = `${y}px`;
+      //     buttonsContainer.style.transform = 'translate(-50%, -50%)';
+      // }
+
+        requestAnimationFrame(render);
+
+        // Mouse movement
+        document.addEventListener('mousemove', function(evt) {
+          cameraRotationProxyX = Mathutils.map(evt.clientX, 0, window.innerWidth, 3.24, 3.04);
+          cameraRotationProxyY = Mathutils.map(evt.clientY, 0, window.innerHeight, -0.1, 0.1);
+        });
+
+        // Window resize
+        window.addEventListener('resize', function () {
+          var width = window.innerWidth;
+          var height = window.innerHeight;
+
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+
+          renderer.setSize( width, height );
+          if (composer) {
+              composer.setSize( width, height );
+          }
+        }, false );
+
+        // Función para manejar clicks de botones
+        function handleClick(action) {
+            // Efecto visual
+            const button = event.currentTarget; // Cambiado a currentTarget para mayor seguridad
+            button.style.transform = 'translateY(-5px) scale(1.05)';
+
+            // Sonido
+            const sound = action === 'growth'
+                ? document.getElementById('bip1')
+                : document.getElementById('bip2');
+
+            sound.currentTime = 0; // Reinicia si ya estaba sonando
+            sound.play().catch(e => console.log("Error al reproducir sonido:", e));
+
+            // Restablecer efecto visual después de 150ms
+            setTimeout(() => {
+                button.style.transform = 'translateY(-5px)';
+            }, 150);
+        }
+
+    </script>
+</body>
+</html>
