@@ -94,11 +94,10 @@ function initHorizontalScrollAnimations() {
         trigger: sectionPin,
         start: "top top",
         end: () => `+=${scrollLength}`,
-        scrub: 1, // 🔧 Más suave (era 0.8)
+        scrub: 1,
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        markers: false,
         id: 'horizontalPin'
       }
     });
@@ -110,24 +109,24 @@ function initHorizontalScrollAnimations() {
   if (pinWrapIzq && sectionPinIzq) {
     const scrollLengthIzq = pinWrapIzq.scrollWidth - window.innerWidth;
 
+    // ✅ NO CAMBIES EL SIGNO
     gsap.to(pinWrapIzq, {
-      x: () => `-${scrollLengthIzq}`,
+      x: () => `${scrollLengthIzq}`,
       ease: "none",
       scrollTrigger: {
         trigger: sectionPinIzq,
         start: "top top",
         end: () => `+=${scrollLengthIzq}`,
-        scrub: 1, // 🔧 Más suave (era 0.8)
+        scrub: 1,
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        markers: false,
         id: 'horizontalPinIzq'
       }
     });
   }
 
-  setTimeout(() => ScrollTrigger.refresh(), 100);
+  ScrollTrigger.refresh();
 }
 
 // CSS adicional para móvil (agregar con JavaScript)
@@ -325,7 +324,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Nueva funcion para llevar el scroll
   function handleHeroScroll(direction) {
     if (state.isScrolling) return;
 
@@ -337,21 +335,13 @@ document.addEventListener('DOMContentLoaded', () => {
         showBlock(state.currentBlock);
       } else if (elements.nextSection) {
         disableScrollTemporarily(1300);
-        // Transición más suave a la siguiente sección
         gsap.to(window, {
           scrollTo: {
             y: elements.nextSection,
-            autoKill: false,
-            offsetY: 10 // Pequeño offset para asegurar la detección
+            autoKill: false
           },
           duration: 1.2,
-          ease: "power2.inOut",
-          onComplete: () => {
-            // Forzar un pequeño scroll adicional para activar los observadores
-            setTimeout(() => {
-              window.scrollBy(0, 1);
-            }, 100);
-          }
+          ease: "power2.inOut"
         });
         removeHeroListeners();
       }
@@ -410,7 +400,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Reemplazar la función handleScrollableScroll con esta versión mejorada
   function handleScrollableScroll(direction) {
     if (state.isScrollableScrolling || state.transitioningToNextSection) return;
 
@@ -421,30 +410,14 @@ document.addEventListener('DOMContentLoaded', () => {
         state.currentScrollableBlock++;
         showScrollableBlock(state.currentScrollableBlock);
       } else {
-        // Transición más inteligente a la siguiente sección
-        const nextSection = document.querySelector('#scrollableERP');
-        if (nextSection) {
-          disableScrollTemporarily(1300);
-          gsap.to(window, {
-            scrollTo: {
-              y: nextSection,
-              autoKill: false,
-              offsetY: 10 // Pequeño offset para asegurar la detección
-            },
-            duration: 1.2,
-            ease: "power2.inOut",
-            onComplete: () => {
-              // Forzar un pequeño scroll adicional para activar los observadores
-              setTimeout(() => {
-                window.scrollBy(0, 1);
-              }, 100);
-            }
-          });
-        } else {
-          // Si no hay siguiente sección, permitir scroll normal
-          document.body.style.overflow = 'auto';
-          removeScrollableListeners();
-        }
+        // 🔧 TRANSICIÓN NATURAL: Dejar que el scroll normal tome control
+        document.body.style.overflow = 'auto'; // Restaurar scroll normal
+        removeScrollableListeners(); // Quitar listeners de scroll personalizado
+
+        // Pequeño delay para que el scroll natural funcione
+        setTimeout(() => {
+          // El scroll natural llevará a la siguiente sección
+        }, 100);
       }
     } else if (direction < 0) {
       if (state.currentScrollableBlock > 0) {
@@ -526,34 +499,22 @@ document.addEventListener('DOMContentLoaded', () => {
     state.listenersAttached = false;
   }
 
-  // Mejorar el Intersection Observer para la sección scrollable
+  // Intersection Observer para la sección scrollable
   function initScrollableObserver() {
     if (!elements.scrollableSection) return;
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          // Asegurar que el scroll esté bloqueado al entrar
-          document.body.style.overflow = 'hidden';
           attachScrollableListeners();
-
-          // Pequeño ajuste de posición si es necesario
-          if (window.scrollY > entry.boundingClientRect.top + window.scrollY) {
-            window.scrollTo(0, entry.boundingClientRect.top + window.scrollY);
-          }
         } else {
-          // Solo quitar listeners si no estamos yendo a la siguiente sección
-          if (!state.transitioningToNextSection) {
-            removeScrollableListeners();
-          }
+          removeScrollableListeners();
         }
       });
-    }, {
-      threshold: config.intersectionThreshold,
-      rootMargin: '0px 0px -10px 0px' // Margen inferior para detectar antes
-    });
+    }, { threshold: config.intersectionThreshold });
 
     observer.observe(elements.scrollableSection);
+
     return () => observer.disconnect();
   }
 
@@ -621,40 +582,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      // ✅ ScrollTrigger para ERP Integration Section SOLO si existe
+      // ✅ ScrollTrigger para ERP Integration Section
       const erpContainer = document.querySelector("#scrollableERP");
-      if (erpContainer) {
-        const erpBlocks = gsap.utils.toArray("#scrollableERP .scrollable-text-block");
-        let currentERPBlock = 0;
+      const erpBlocks = gsap.utils.toArray("#scrollableERP .scrollable-text-block");
+      let currentERPBlock = 0;
 
-        ScrollTrigger.create({
-          trigger: erpContainer,
-          start: "top top",
-          end: () => "+=" + erpContainer.offsetHeight,
-          pin: true,
-          pinSpacing: true,
-          scrub: true,
-          onUpdate: self => {
-            const newIndex = Math.floor(self.progress * erpBlocks.length);
-            if (newIndex !== currentERPBlock) {
-              gsap.to(erpBlocks[currentERPBlock], { opacity: 0, y: 20, duration: 0.3 });
-              gsap.to(erpBlocks[newIndex], { opacity: 1, y: 0, duration: 0.3 });
-              currentERPBlock = newIndex;
-            }
+      ScrollTrigger.create({
+        trigger: erpContainer,
+        start: "top top",
+        end: () => "+=" + erpContainer.offsetHeight,
+        pin: true,
+        pinSpacing: true,
+        scrub: true,
+        onUpdate: self => {
+          const newIndex = Math.floor(self.progress * erpBlocks.length);
+          if (newIndex !== currentERPBlock) {
+            gsap.to(erpBlocks[currentERPBlock], { opacity: 0, y: 20, duration: 0.3 });
+            gsap.to(erpBlocks[newIndex], { opacity: 1, y: 0, duration: 0.3 });
+            currentERPBlock = newIndex;
           }
-        });
+        }
+      });
 
-        ScrollTrigger.create({
-          trigger: erpContainer,
-          start: "top top",
-          end: "bottom top",
-          onLeaveBack: () => {
-            gsap.to(erpBlocks, { opacity: 0, y: 20, duration: 0.3 });
-            gsap.to(erpBlocks[0], { opacity: 1, y: 0, duration: 0.3 });
-            currentERPBlock = 0;
-          }
-        });
-      }
+      ScrollTrigger.create({
+        trigger: erpContainer,
+        start: "top top",
+        end: "bottom top",
+        onLeaveBack: () => {
+          gsap.to(erpBlocks, { opacity: 0, y: 20, duration: 0.3 });
+          gsap.to(erpBlocks[0], { opacity: 1, y: 0, duration: 0.3 });
+          currentERPBlock = 0;
+        }
+      });
 
       // Inicializar observadores
       const cleanupObserver = initScrollableObserver();
