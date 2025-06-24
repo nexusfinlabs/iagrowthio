@@ -662,6 +662,34 @@ video {
   background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
 }
 
+.cta-button.small3 {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  background: linear-gradient(135deg, #00fff7 0%, #00ff88 100%);
+  color: #111;
+  box-shadow: 0 4px 12px rgba(0, 255, 247, 0.3);
+}
+
+.cta-button.small3:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 255, 247, 0.4);
+  background: linear-gradient(135deg, #00ff88 0%, #66ffb2 100%);
+}
+
+.cta-button.small4 {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  background: linear-gradient(135deg, #00fff7 0%, #ff66cc 100%);
+  color: #111;
+  box-shadow: 0 4px 12px rgba(0, 255, 247, 0.3);
+}
+
+.cta-button.small4:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 255, 247, 0.4);
+  background: linear-gradient(135deg, #ff66cc 0%, #ff4757 100%);
+}
+
 /* Footer */
 .footer-section {
   background: var(--bg-color);

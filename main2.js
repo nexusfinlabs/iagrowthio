@@ -77,15 +77,29 @@ function handleHorizontalScrollSetup() {
   }
 }
 
-// Función para inicializar animaciones horizontales (solo desktop)
+// Función corregida para inicializar animaciones horizontales
 function initHorizontalScrollAnimations() {
   if (!shouldEnableHorizontalScroll) return;
 
   const pinWrap = document.querySelector("#pinWrap");
   const sectionPin = document.querySelector("#sectionPin");
+  const pinWrapIzq = document.querySelector("#pinWrapIzq");
+  const sectionPinIzq = document.querySelector("#sectionPinIzq");
 
+  // Limpiar animaciones existentes
+  ScrollTrigger.getAll().forEach(trigger => {
+    if (trigger.vars.id === 'horizontalPin' || trigger.vars.id === 'horizontalPinIzq') {
+      trigger.kill();
+    }
+  });
+
+  // Animación para la primera sección (derecha)
   if (pinWrap && sectionPin) {
-    const scrollLength = pinWrap.scrollWidth - window.innerWidth;
+    // CORRECCIÓN: Calcular el ancho real basado en el número de elementos
+    const items = pinWrap.querySelectorAll('.horizontal-item');
+    const scrollLength = (items.length - 1) * window.innerWidth;
+
+    console.log(`Primera sección: ${items.length} elementos, scrollLength: ${scrollLength}px`);
 
     gsap.to(pinWrap, {
       x: () => `-${scrollLength}`,
@@ -98,20 +112,27 @@ function initHorizontalScrollAnimations() {
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        id: 'horizontalPin'
+        id: 'horizontalPin',
+        onUpdate: self => {
+          console.log(`Primera sección progress: ${self.progress}`);
+        }
       }
     });
   }
 
-  const pinWrapIzq = document.querySelector("#pinWrapIzq");
-  const sectionPinIzq = document.querySelector("#sectionPinIzq");
-
+  // Animación para la segunda sección (izquierda) - DIRECCIÓN OPUESTA
   if (pinWrapIzq && sectionPinIzq) {
-    const scrollLengthIzq = pinWrapIzq.scrollWidth - window.innerWidth;
+    const itemsIzq = pinWrapIzq.querySelectorAll('.horizontal-item');
+    const scrollLengthIzq = (itemsIzq.length - 1) * window.innerWidth;
 
-    // ✅ NO CAMBIES EL SIGNO
+    console.log(`Segunda sección: ${itemsIzq.length} elementos, scrollLength: ${scrollLengthIzq}px`);
+
+    // CONFIGURACIÓN INICIAL: Posicionar al final para que se mueva hacia la derecha
+    gsap.set(pinWrapIzq, { x: -scrollLengthIzq });
+
+    // ANIMACIÓN: De izquierda a derecha (opuesto a la primera sección)
     gsap.to(pinWrapIzq, {
-      x: () => `${scrollLengthIzq}`,
+      x: 0, // Mover hacia la derecha (dirección opuesta)
       ease: "none",
       scrollTrigger: {
         trigger: sectionPinIzq,
@@ -121,13 +142,98 @@ function initHorizontalScrollAnimations() {
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        id: 'horizontalPinIzq'
+        id: 'horizontalPinIzq',
+        onUpdate: self => {
+          console.log(`Segunda sección progress: ${self.progress} - x: ${gsap.getProperty(pinWrapIzq, 'x')}`);
+        }
       }
     });
   }
 
+  // Refresh después de crear las animaciones
   ScrollTrigger.refresh();
 }
+
+// Función mejorada para debug de elementos horizontales
+function debugHorizontalElements() {
+  const sections = ['#pinWrap', '#pinWrapIzq'];
+
+  sections.forEach(selector => {
+    const container = document.querySelector(selector);
+    if (container) {
+      const items = container.querySelectorAll('.horizontal-item');
+      console.log(`${selector}:`, {
+        container: container,
+        items: items.length,
+        containerWidth: container.scrollWidth,
+        viewportWidth: window.innerWidth,
+        calculatedScrollLength: (items.length - 1) * window.innerWidth
+      });
+    } else {
+      console.warn(`No se encontró ${selector}`);
+    }
+  });
+}
+
+// Reemplaza la función initHorizontalScrollAnimations con esta versión corregida
+// function initHorizontalScrollAnimations() {
+//   if (!shouldEnableHorizontalScroll) return;
+//
+//   const pinWrap = document.querySelector("#pinWrap");
+//   const sectionPin = document.querySelector("#sectionPin");
+//   const pinWrapIzq = document.querySelector("#pinWrapIzq");
+//   const sectionPinIzq = document.querySelector("#sectionPinIzq");
+//
+//   // Limpiar animaciones existentes
+//   ScrollTrigger.getAll().forEach(trigger => {
+//     if (trigger.vars.id === 'horizontalPin' || trigger.vars.id === 'horizontalPinIzq') {
+//       trigger.kill();
+//     }
+//   });
+//
+//   // Animación para la primera sección (derecha)
+//   if (pinWrap && sectionPin) {
+//     const scrollLength = pinWrap.scrollWidth - window.innerWidth;
+//
+//     gsap.to(pinWrap, {
+//       x: () => `-${scrollLength}`,
+//       ease: "none",
+//       scrollTrigger: {
+//         trigger: sectionPin,
+//         start: "top top",
+//         end: () => `+=${scrollLength}`,
+//         scrub: 1,
+//         pin: true,
+//         anticipatePin: 1,
+//         invalidateOnRefresh: true,
+//         id: 'horizontalPin'
+//       }
+//     });
+//   }
+//
+//   // Animación para la segunda sección (izquierda) - CORREGIDO
+//   if (pinWrapIzq && sectionPinIzq) {
+//     const scrollLengthIzq = pinWrapIzq.scrollWidth - window.innerWidth;
+//
+//     // La clave está en usar scrollLengthIzq positivo y dirección opuesta
+//     gsap.to(pinWrapIzq, {
+//       x: () => `${scrollLengthIzq}`, // Sin signo negativo
+//       ease: "none",
+//       scrollTrigger: {
+//         trigger: sectionPinIzq,
+//         start: "top top",
+//         end: () => `+=${scrollLengthIzq}`,
+//         scrub: 1,
+//         pin: true,
+//         anticipatePin: 1,
+//         invalidateOnRefresh: true,
+//         id: 'horizontalPinIzq'
+//       }
+//     });
+//   }
+//
+//   ScrollTrigger.refresh();
+// }
 
 // CSS adicional para móvil (agregar con JavaScript)
 function addMobileStyles() {
@@ -231,6 +337,11 @@ function openVideoModal(src) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+
+  // Llamar debug después de que el DOM esté listo
+  setTimeout(() => {
+    debugHorizontalElements();
+  }, 1000);
 
   // Esperar a que GSAP esté listo
   gsap.registerPlugin(ScrollTrigger);
