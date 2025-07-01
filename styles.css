@@ -18,9 +18,8 @@
 }
 
 html {
-  scroll-behavior: auto;
+  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain; /* Evita bounce en iOS */
 }
 
 body {
@@ -162,6 +161,7 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
+  z-index: 2;
 }
 
 .scrollable-text-block {
@@ -174,6 +174,7 @@ body {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.8s ease, transform 0.8s ease;
+  z-index: 3;
 }
 
 .scrollable-text-block.active {
@@ -763,12 +764,12 @@ video {
       will-change: transform;
     }
 
-    /* Normal: video derecha, texto izquierda */
     .scrollable-content-grid {
-      display: grid;
-      grid-template-columns: 1fr 400px;
-      gap: 3rem;
-      align-items: center;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 2rem !important;
+      padding: 2rem 1.5rem !important;
+      height: auto !important;
     }
 
     .scrollable-content-grid.scrollable-reverse {
@@ -819,8 +820,123 @@ video {
   }
 }
 
+/* Modificaciones para móvil - Versión corregida */
+@media (max-width: 768px) {
+  .hero-split {
+    grid-template-columns: 1fr;
+    padding: 2rem 1.5rem;
+    min-height: auto;
+    height: auto;
+    gap: 2rem;
+  }
+
+  .hero-left h1 {
+    font-size: 2.2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .text-block-container {
+    height: 300px;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .text-block {
+    position: absolute; /* ¡Clave! Posicionamiento absoluto */
+    scroll-snap-align: start;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 1;
+    transform: none;
+    font-size: 1.2rem;
+    padding: 0 5vw;
+    text-align: center;
+    margin: 0; /* Eliminamos márgenes */
+    display: block !important;
+    animation: none !important;
+    transition: opacity 0.3s ease; /* Transición suave para cambios */
+    margin-bottom: 1.5rem; /* Añadir esto */
+  }
+
+  /* Ocultamos todos excepto el activo */
+  .text-block:not(.active) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .text-block.active {
+    opacity: 1;
+    z-index: 2;
+    position: relative;
+  }
+
+  .text-block br {
+    display: none;
+  }
+
+  /* Colores específicos */
+  .text-block:nth-child(1) { color: #00D4FF; }
+  .text-block:nth-child(2) { color: #facc15; }
+  .text-block:nth-child(3) { color: #86efac; }
+  .text-block:nth-child(4) { color: #FF6B35; }
+  .text-block:nth-child(5) { color: #00FF88; }
+}
+
 @media (min-width: 769px) {
   .horizontal-content {
     position: relative !important;
+  }
+}
+
+/* Añade esto al final de tu CSS */
+@media (max-width: 768px) {
+
+  .video-container-mobile {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow: hidden;
+  }
+
+  .video-container-mobile video {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+  }
+
+  /* Solución alternativa para videos de fondo */
+  .background-video-mobile {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .background-video-mobile video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+  }
+
+  /* Ajuste específico para videos en horizontal-scroll sections */
+  .horizontal-section .video-container {
+    width: 100vw !important;
+    height: 56.25vw !important;
+    max-height: 60vh !important;
+    margin: 0 -1.5rem !important;
   }
 }
